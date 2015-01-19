@@ -208,7 +208,7 @@ func (b *charmBuilder) writeMeta(relations map[string]charm.Relation) error {
 	}
 	// The metadata name must match the directory name otherwise
 	// juju deploy will ignore the charm.
-	meta.Name = filepath.Base(b.pkg.Dir)
+	meta.Name = getCharmName(b.pkg)
 	meta.Provides = make(map[string]charm.Relation)
 	meta.Requires = make(map[string]charm.Relation)
 	meta.Peers = make(map[string]charm.Relation)

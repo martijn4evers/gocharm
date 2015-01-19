@@ -9,6 +9,7 @@
 //	  -series="trusty": select the os version to deploy the charm as
 //	  -source=false: include source code instead of binary executable
 //	  -v=false: print information about charms being built
+//	  -name="": charm name (defaults to the last element of the package path)
 //
 // If the -source flag is specified, all source dependencies are installed
 // in the destination charm directory, otherwise just the package
@@ -75,10 +76,11 @@ import (
 )
 
 var (
-	repo    = flag.String("repo", "", "charm repo directory (defaults to $JUJU_REPOSITORY)")
-	verbose = flag.Bool("v", false, "print information about charms being built")
-	source  = flag.Bool("source", false, "include source code instead of binary executable")
-	godeps  = flag.Bool("godeps", false, "include godeps output in $CHARM_DIR/dependencies.tsv")
+	repo      = flag.String("repo", "", "charm repo directory (defaults to $JUJU_REPOSITORY)")
+	verbose   = flag.Bool("v", false, "print information about charms being built")
+	source    = flag.Bool("source", false, "include source code instead of binary executable")
+	charmName = flag.String("name", "", "charm name (defaults to the last element of the package path)")
+	godeps    = flag.Bool("godeps", false, "include godeps output in $CHARM_DIR/dependencies.tsv")
 )
 
 // TODO select current OS version by default
@@ -128,8 +130,9 @@ func main1(pkgPath string) error {
 	if err != nil {
 		return errgo.Notef(err, "cannot import %q", pkgPath)
 	}
-	charmName := path.Base(pkg.Dir)
-	dest := filepath.Join(*repo, *series, charmName)
+
+	name := getCharmName(pkg)
+	dest := filepath.Join(*repo, *series, name)
 
 	if _, err := canClean(dest); err != nil {
 		return errgo.Notef(err, "cannot clean destination directory")
@@ -195,7 +198,7 @@ func main1(pkgPath string) error {
 	curl := &charm.URL{
 		Schema:   "local",
 		Series:   *series,
-		Name:     charmName,
+		Name:     name,
 		Revision: -1,
 	}
 	fmt.Println(curl)
@@ -330,4 +333,13 @@ func errorf(f string, a ...interface{}) {
 func fatalf(f string, a ...interface{}) {
 	errorf(f, a...)
 	os.Exit(2)
+}
+
+func getCharmName(pkg *build.Package) string {
+	name := *charmName
+	if name == "" {
+		name = path.Base(pkg.Dir)
+	}
+
+	return name
 }
