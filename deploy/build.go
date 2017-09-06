@@ -13,6 +13,7 @@ import (
 
 	"gopkg.in/errgo.v1"
 	"gopkg.in/juju/charm.v6-unstable"
+	"gopkg.in/juju/charm.v6-unstable/resource"
 	"gopkg.in/yaml.v2"
 )
 
@@ -71,7 +72,7 @@ func BuildCharm(p BuildCharmParams) error {
 	if err := b.writeHooks(r.RegisteredHooks()); err != nil {
 		return errgo.Notef(err, "cannot write hooks to charm")
 	}
-	if err := b.writeMeta(r.RegisteredRelations()); err != nil {
+	if err := b.writeMeta(r.RegisteredRelations(), r.RegisteredResources()); err != nil {
 		return errgo.Notef(err, "cannot write metadata.yaml")
 	}
 	if err := b.writeConfig(r.RegisteredConfig()); err != nil {
@@ -178,7 +179,7 @@ func (b *charmBuilder) hookStub(hookName string) []byte {
 	})
 }
 
-func (b *charmBuilder) writeMeta(relations map[string]charm.Relation) error {
+func (b *charmBuilder) writeMeta(relations map[string]charm.Relation, resources map[string]resource.Meta) error {
 	var meta charm.Meta
 	info := b.Registry.CharmInfo()
 	meta.Name = info.Name
@@ -187,6 +188,7 @@ func (b *charmBuilder) writeMeta(relations map[string]charm.Relation) error {
 	meta.Provides = make(map[string]charm.Relation)
 	meta.Requires = make(map[string]charm.Relation)
 	meta.Peers = make(map[string]charm.Relation)
+	meta.Resources = resources
 
 	for name, rel := range relations {
 		switch rel.Role {
