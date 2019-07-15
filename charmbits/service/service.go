@@ -67,7 +67,7 @@ func (svc *Service) Register(r *hook.Registry, serviceName string, start func(ct
 	r.RegisterContext(svc.setContext, &svc.state)
 	// TODO Perhaps provide some way to do zero-downtime
 	// upgrades?
-	r.RegisterHook("upgrade-charm", svc.Restart)
+	//r.RegisterHook("upgrade-charm", svc.Restart)
 	r.RegisterCommand(func(args []string) (hook.Command, error) {
 		return runServer(start, args)
 	})
