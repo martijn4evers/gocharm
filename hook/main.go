@@ -27,7 +27,6 @@ var mustEnvVars = []string{
 	envUnitName,
 	envCharmDir,
 	envJujuContextId,
-	envSocketPath,
 }
 
 var relationEnvVars = []string{
