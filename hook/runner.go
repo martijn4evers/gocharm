@@ -3,7 +3,6 @@ package hook
 import (
 	"bytes"
 	"net/rpc"
-	"os"
 	osexec "os/exec"
 	"strings"
 
@@ -47,25 +46,7 @@ type socketToolRunner struct {
 // that uses a direct connection to the unit agent's socket to
 // run the tools.
 func newToolRunnerFromEnvironment() (ToolRunner, error) {
-	if execHookTools {
-		return execToolRunner{}, nil
-	}
-	path := os.Getenv(envSocketPath)
-	if path == "" {
-		return nil, errgo.New("no juju socket found")
-	}
-	contextId := os.Getenv(envJujuContextId)
-	if contextId == "" {
-		return nil, errgo.New("no context id found")
-	}
-	client, err := rpc.Dial("unix", os.Getenv(envSocketPath))
-	if err != nil {
-		return nil, errgo.Newf("cannot dial uniter: %v", err)
-	}
-	return &socketToolRunner{
-		contextId:   contextId,
-		jujucClient: client,
-	}, nil
+	return &execToolRunner{}, nil
 }
 
 // jujucRequest contains the information necessary to run a Command
@@ -93,32 +74,13 @@ func isUnimplemented(errStr string) bool {
 var ErrUnimplemented = errgo.New("unimplemented hook tool")
 
 func (r *socketToolRunner) Run(cmd string, args ...string) (stdout []byte, err error) {
-	req := jujucRequest{
-		ContextId: r.contextId,
-		// We will never use a command that uses a path name,
-		// but jujuc checks for an absolute path.
-		Dir:         "/",
-		CommandName: cmd,
-		Args:        args,
-	}
 	var resp exec.ExecResponse
-	err = r.jujucClient.Call("Jujuc.Main", req, &resp)
-	if err != nil {
-		if isUnimplemented(err.Error()) {
-			return nil, errgo.WithCausef(err, ErrUnimplemented, "")
-		}
-		return nil, errgo.Newf("cannot call jujuc.Main: %v", err)
-	}
-	if resp.Code == 0 {
-		return resp.Stdout, nil
-	}
-	errText := strings.TrimSpace(string(resp.Stderr))
-	errText = strings.TrimPrefix(errText, "error: ")
-	return nil, errgo.New(errText)
+	return resp.Stdout, nil
+
 }
 
 func (r *socketToolRunner) Close() error {
-	return errgo.Mask(r.jujucClient.Close())
+	return nil
 }
 
 type execToolRunner struct{}
