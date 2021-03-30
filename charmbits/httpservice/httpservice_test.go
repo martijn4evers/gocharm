@@ -359,7 +359,7 @@ func (s *suite) TestServer(c *gc.C) {
 	assertCount(c, &closeCount, 1)
 	assertServerValue(map[hook.UnitId]map[string]string{
 		"fooservice/0": {
-			"foo": "arble",
+			"foo": "bar",
 		},
 	})
 

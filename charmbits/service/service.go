@@ -187,8 +187,9 @@ func (svc *Service) osService(args []string) OSService {
 	p := serviceParams{
 		SocketPath: svc.socketPath(),
 		Args:       args,
+		Name:       serviceName,
 	}
-	pdata, err := json.Marshal(p)
+	paramData, err := json.Marshal(p)
 	if err != nil {
 		panic(errgo.Notef(err, "cannot marshal parameters"))
 	}
@@ -198,9 +199,8 @@ func (svc *Service) osService(args []string) OSService {
 		Exe:         exe,
 		Args: []string{
 			svc.ctxt.CommandName(),
-			base64.StdEncoding.EncodeToString(pdata),
+			base64.StdEncoding.EncodeToString(paramData),
 		},
-		Output: filepath.Join(svc.ctxt.StateDir(), "servicelog.out"),
 	})
 }
 

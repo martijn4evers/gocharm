@@ -18,6 +18,7 @@ import (
 type serviceParams struct {
 	SocketPath string
 	Args       []string
+	Name       string
 }
 
 // runServer runs the server side of the service. It is invoked
@@ -37,6 +38,7 @@ func runServer(start func(ctxt *Context, args []string) (hook.Command, error), a
 	ctxt := &Context{
 		socketPath: p.SocketPath,
 	}
+	SystemLogger(p.Name)
 	return start(ctxt, p.Args)
 }
 
