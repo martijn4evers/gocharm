@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/juju/charm/v9"
 	"log"
 	"os"
 	"os/exec"
@@ -10,7 +11,6 @@ import (
 	"text/template"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 )
 
 func registeredCharmInfo(pkg, tempDir string) (*charmInfo, error) {
@@ -59,7 +59,7 @@ package main
 
 import (
 	"encoding/json"
-	"gopkg.in/juju/charm.v6-unstable"
+	"github.com/juju/charm/v9"
 	"os"
 
 	inspect {{.CharmPackage | printf "%q"}}

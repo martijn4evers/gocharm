@@ -12,7 +12,7 @@ import (
 	"gopkg.in/errgo.v1"
 	"gopkg.in/tomb.v2"
 
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/hook"
 )
 
 type serviceParams struct {

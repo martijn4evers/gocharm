@@ -3,7 +3,7 @@
 package runhook
 
 import (
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/hook"
 )
 
 func RegisterHooks(r *hook.Registry) {

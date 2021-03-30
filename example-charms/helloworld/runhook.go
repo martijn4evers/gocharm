@@ -33,8 +33,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/juju/gocharm/charmbits/httpservice"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/httpservice"
+	"github.com/mever/gocharm/hook"
 )
 
 func RegisterHooks(r *hook.Registry) {

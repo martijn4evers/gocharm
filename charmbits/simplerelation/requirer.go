@@ -6,11 +6,10 @@
 package simplerelation
 
 import (
+	"github.com/juju/charm/v9"
 	"sort"
 
-	"gopkg.in/juju/charm.v6-unstable"
-
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/hook"
 )
 
 // Requirer represents the requirer side of a simple relation.

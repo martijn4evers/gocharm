@@ -15,7 +15,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/hook"
 	errgo "gopkg.in/errgo.v1"
 )
 

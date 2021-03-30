@@ -2,13 +2,13 @@ package hook
 
 import (
 	"encoding/json"
+	"github.com/juju/charm/v9/hooks"
 	"log"
 	"os"
 	"sort"
 	"strings"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable/hooks"
 )
 
 const (
@@ -192,7 +192,7 @@ func NewContextFromEnvironment(r *Registry, stateDir string, hookName string, ar
 		}, nil, nil
 	}
 	if len(args) != 0 {
-		return nil, nil, errgo.Newf("unexpected extra arguments running hook %q", hookName)
+		return nil, nil, errgo.Newf("unexpected extra arguments running hook %q: %v", hookName, args)
 	}
 	vars := mustEnvVars
 	if os.Getenv(envRelationName) != "" {

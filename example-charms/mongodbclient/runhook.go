@@ -6,8 +6,8 @@
 package mongodbclient
 
 import (
-	"github.com/juju/gocharm/charmbits/mongodbrelation"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/mongodbrelation"
+	"github.com/mever/gocharm/hook"
 )
 
 func RegisterHooks(r *hook.Registry) {

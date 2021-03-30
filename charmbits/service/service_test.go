@@ -6,9 +6,9 @@ import (
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
-	"github.com/juju/gocharm/charmbits/service"
-	"github.com/juju/gocharm/hook"
-	"github.com/juju/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/charmbits/service"
+	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/hook/hooktest"
 )
 
 type suite struct{}
@@ -29,9 +29,7 @@ func (*suite) TestService(c *gc.C) {
 		RegisterHooks: func(r *hook.Registry) {
 			var svc service.Service
 			svc.Register(r.Clone("svc"), "servicename", startService)
-			var ctxt *hook.Context
 			r.RegisterContext(func(hctxt *hook.Context) error {
-				ctxt = hctxt
 				return nil
 			}, nil)
 			r.RegisterHook("start", func() error {

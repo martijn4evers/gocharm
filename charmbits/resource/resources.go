@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/juju/errors"
-	"github.com/juju/gocharm/hook"
-	"gopkg.in/juju/charm.v6-unstable/resource"
+	"github.com/mever/gocharm/hook"
+	"github.com/juju/charm/v9/resource"
 )
 
 type Service struct {

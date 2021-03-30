@@ -9,13 +9,13 @@ package runhook
 
 import (
 	"fmt"
+	"github.com/juju/charm/v9"
 	"net/http"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 
-	"github.com/juju/gocharm/charmbits/httpservice"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/httpservice"
+	"github.com/mever/gocharm/hook"
 )
 
 func RegisterHooks(r *hook.Registry) {

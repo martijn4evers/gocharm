@@ -14,8 +14,8 @@ import (
 
 	"gopkg.in/errgo.v1"
 
-	"github.com/juju/gocharm/charmbits/service"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/service"
+	"github.com/mever/gocharm/hook"
 )
 
 // startServer starts the server running. The

@@ -3,6 +3,7 @@ package httpservice_test
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/juju/charm/v9"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -13,13 +14,12 @@ import (
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 
-	"github.com/juju/gocharm/charmbits/httpservice"
-	"github.com/juju/gocharm/charmbits/service"
-	"github.com/juju/gocharm/charmbits/simplerelation"
-	"github.com/juju/gocharm/hook"
-	"github.com/juju/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/charmbits/httpservice"
+	"github.com/mever/gocharm/charmbits/service"
+	"github.com/mever/gocharm/charmbits/simplerelation"
+	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/hook/hooktest"
 )
 
 type suite struct{}

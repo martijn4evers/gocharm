@@ -1,10 +1,10 @@
 package simplerelation
 
 import (
+	"github.com/juju/charm/v9"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/hook"
 )
 
 // Provider represents the provider side of a simple relation.

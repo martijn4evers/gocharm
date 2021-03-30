@@ -7,11 +7,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/juju/names"
+	"github.com/juju/charm/v9"
+	"github.com/juju/charm/v9/hooks"
+	"github.com/juju/charm/v9/resource"
+	"github.com/juju/names/v4"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
-	"gopkg.in/juju/charm.v6-unstable/hooks"
-	"gopkg.in/juju/charm.v6-unstable/resource"
 )
 
 // ContextSetter is the type of a function that can

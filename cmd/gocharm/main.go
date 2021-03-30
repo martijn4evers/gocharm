@@ -21,7 +21,7 @@
 //
 // This function should register any resources required by the
 // charm when it runs, including hooks, relations, configuration
-// options. See the hook package (github.com/juju/gocharm/hook)
+// options. See the hook package (github.com/mever/gocharm/hook)
 // for an explanation of the hook registry.
 //
 // The hook is installed into the $JUJU_REPOSITORY/$series/$name
@@ -59,6 +59,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"github.com/juju/charm/v9"
 	"go/build"
 	"io"
 	"io/ioutil"
@@ -71,7 +72,6 @@ import (
 
 	"github.com/juju/utils/fs"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 )
 
 var (

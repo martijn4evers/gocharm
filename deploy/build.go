@@ -2,6 +2,8 @@ package deploy
 
 import (
 	"bytes"
+	"github.com/juju/charm/v9"
+	"github.com/juju/charm/v9/resource"
 	"io"
 	"io/ioutil"
 	"os"
@@ -9,11 +11,9 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/hook"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
-	"gopkg.in/juju/charm.v6-unstable/resource"
 	"gopkg.in/yaml.v2"
 )
 
