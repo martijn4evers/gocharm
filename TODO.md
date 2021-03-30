@@ -1,8 +1,3 @@
-Support godeps
-----------------
-
-We should implement the godeps flag as a lighter weight alternative
-to the -source mode.
 
 Upgrading
 --------
