@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/tomb.v2"
 	"os/exec"
+	"strings"
 )
 
 // OSServiceParams holds the parameters for
@@ -89,7 +90,12 @@ func (p *program) IsNotInstalled() bool {
 }
 
 func (p *program) IsRunning() bool {
-	return exec.Command("service", p.name, "status").Run() == nil
+	data, err := exec.Command("service", p.name, "status").Output()
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(string(data), "running")
 }
 
 func SystemLogger(osServiceName string) {
