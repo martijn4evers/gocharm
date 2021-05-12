@@ -1,11 +1,9 @@
 package service
 
 import (
-	"github.com/kardianos/service"
+	"github.com/mever/service"
 	"github.com/pkg/errors"
 	"gopkg.in/tomb.v2"
-	"os/exec"
-	"strings"
 )
 
 // OSServiceParams holds the parameters for
@@ -76,26 +74,24 @@ func (p *program) Stop(s service.Service) error {
 	return s.Stop()
 }
 
-// FIXME [upstream]: p.Status() can not be used due to a bug in service_systemd_linux.go
-// > exitCode, out, err := runWithOutput("systemctl", "list-unit-files", "-t", "service", s.Name)
-// < exitCode, out, err := runWithOutput("systemctl", "list-unit-files", "-t", "service", s.Name + ".service")
-
 func (p *program) IsNotInstalled() bool {
-	err := exec.Command("service", p.name, "status").Run()
-	if exitErr, ok := err.(*exec.ExitError); ok {
-		return exitErr.ExitCode() == 4
+	if s, er := p.Service.Status(); s == service.StatusUnknown {
+		if er == nil {
+			panic("service daemon reports an unknown status")
+		} else {
+			return er == service.ErrNotInstalled
+		}
 	} else {
 		return false
 	}
 }
 
 func (p *program) IsRunning() bool {
-	data, err := exec.Command("service", p.name, "status").Output()
-	if err != nil {
-		return false
+	if s, er := p.Service.Status(); er == nil {
+		return s == service.StatusRunning
+	} else {
+		panic(er)
 	}
-
-	return strings.Contains(string(data), "running")
 }
 
 func SystemLogger(osServiceName string) {
