@@ -21,7 +21,7 @@
 //
 // This function should register any resources required by the
 // charm when it runs, including hooks, relations, configuration
-// options. See the hook package (github.com/juju/gocharm/hook)
+// options. See the hook package (github.com/mever/gocharm/hook)
 // for an explanation of the hook registry.
 //
 // The hook is installed into the $JUJU_REPOSITORY/$series/$name
@@ -59,6 +59,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"github.com/juju/charm/v9"
 	"go/build"
 	"io"
 	"io/ioutil"
@@ -71,14 +72,12 @@ import (
 
 	"github.com/juju/utils/fs"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 )
 
 var (
 	repo    = flag.String("repo", "", "charm repo directory (defaults to $JUJU_REPOSITORY)")
 	verbose = flag.Bool("v", false, "print information about charms being built")
 	source  = flag.Bool("source", false, "include source code instead of binary executable")
-	godeps  = flag.Bool("godeps", false, "include godeps output in $CHARM_DIR/dependencies.tsv")
 	keep    = flag.Bool("keep", false, "do not delete temporary files")
 )
 
@@ -153,16 +152,11 @@ func main1(pkgPath string) error {
 	}
 
 	tempCharmDir := filepath.Join(tempDir, "charm")
-	if err := copyContents(pkg, tempCharmDir); err != nil {
-		return errgo.Notef(err, "cannot copy package contents")
-	}
-
 	if err := buildCharm(buildCharmParams{
 		pkg:      pkg,
 		charmDir: tempCharmDir,
 		tempDir:  tempDir,
 		source:   *source,
-		// TODO godeps
 	}); err != nil {
 		return errgo.Mask(err)
 	}
@@ -202,29 +196,6 @@ func main1(pkgPath string) error {
 		Revision: -1,
 	}
 	fmt.Println(curl)
-	return nil
-}
-
-func copyContents(pkg *build.Package, destDir string) error {
-	destPkgDir := filepath.Join(destDir, "src", filepath.FromSlash(pkg.ImportPath))
-	if err := os.MkdirAll(filepath.Dir(destPkgDir), 0777); err != nil {
-		return errgo.Mask(err)
-	}
-	if err := fs.Copy(pkg.Dir, destPkgDir); err != nil {
-		return errgo.Notef(err, "cannot copy package")
-	}
-	if _, err := os.Stat(filepath.Join(destPkgDir, "assets")); err == nil {
-		// Make relative symlink from assets in charm root directory
-		// to where it lives in the charm package.
-		if err := os.Symlink(filepath.Join("src", filepath.FromSlash(pkg.ImportPath), "assets"), filepath.Join(destDir, "assets")); err != nil {
-			return errgo.Mask(err)
-		}
-	}
-	if _, err := os.Stat(filepath.Join(destPkgDir, "README.md")); err == nil {
-		if err := fs.Copy(filepath.Join(destPkgDir, "README.md"), filepath.Join(destDir, "README.md")); err != nil {
-			return errgo.Mask(err)
-		}
-	}
 	return nil
 }
 

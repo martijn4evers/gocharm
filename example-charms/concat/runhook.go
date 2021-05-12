@@ -32,15 +32,15 @@ package concat
 
 import (
 	"fmt"
+	"github.com/juju/charm/v9"
 	"sort"
 	"strings"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 
-	"github.com/juju/gocharm/charmbits/httprelation"
-	"github.com/juju/gocharm/charmbits/service"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/httprelation"
+	"github.com/mever/gocharm/charmbits/service"
+	"github.com/mever/gocharm/hook"
 )
 
 var empty = &struct{}{}

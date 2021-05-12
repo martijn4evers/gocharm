@@ -27,12 +27,12 @@ import (
 	"net"
 	"strings"
 
+	"github.com/juju/mgo/v2"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/mgo.v2"
 
-	"github.com/juju/gocharm/charmbits/httpservice"
-	"github.com/juju/gocharm/charmbits/simplerelation"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/httpservice"
+	"github.com/mever/gocharm/charmbits/simplerelation"
+	"github.com/mever/gocharm/hook"
 )
 
 // Requirer represents the requirer side of an mongodb relation.

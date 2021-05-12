@@ -1,7 +1,7 @@
 // The hook package provides a Go interface to the
 // Juju charm hook commands. It is designed to be used
 // alongside the gocharm command.
-// See http://godoc.org/github.com/juju/gocharm/cmd/gocharm .
+// See http://godoc.org/github.com/mever/gocharm/cmd/gocharm .
 //
 // When a gocharm-compiled Juju hook runs, the first thing that happens
 // is that the RegisterHooks function is called. This is called both when
@@ -40,7 +40,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/juju/names"
+	"github.com/juju/names/v4"
 	"gopkg.in/errgo.v1"
 )
 

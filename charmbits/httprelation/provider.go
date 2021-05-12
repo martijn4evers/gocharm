@@ -5,11 +5,11 @@ package httprelation
 import (
 	"strconv"
 
+	"github.com/juju/charm/v9"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 
-	"github.com/juju/gocharm/charmbits/simplerelation"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/simplerelation"
+	"github.com/mever/gocharm/hook"
 )
 
 // providerState holds the persistent charm state for the provider part of

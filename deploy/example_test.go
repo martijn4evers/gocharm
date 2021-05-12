@@ -2,10 +2,8 @@ package deploy_test
 
 import (
 	"flag"
-	"os"
-
-	"github.com/juju/gocharm/deploy"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/deploy"
+	"github.com/mever/gocharm/hook"
 )
 
 func ExampleRunMain() {

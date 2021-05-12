@@ -2,18 +2,18 @@ package mongodbrelation_test
 
 import (
 	"fmt"
+	"github.com/juju/mgo/v2"
 	"io/ioutil"
 	"net/http"
 
 	jujutesting "github.com/juju/testing"
 	gc "gopkg.in/check.v1"
-	"gopkg.in/mgo.v2"
 
-	"github.com/juju/gocharm/charmbits/httpservice"
-	_ "github.com/juju/gocharm/charmbits/mongodbrelation"
-	"github.com/juju/gocharm/charmbits/service"
-	"github.com/juju/gocharm/hook"
-	"github.com/juju/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/charmbits/httpservice"
+	_ "github.com/mever/gocharm/charmbits/mongodbrelation"
+	"github.com/mever/gocharm/charmbits/service"
+	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/hook/hooktest"
 )
 
 type suite struct {

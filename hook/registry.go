@@ -7,10 +7,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/juju/names"
+	"github.com/juju/charm/v9"
+	"github.com/juju/charm/v9/hooks"
+	"github.com/juju/charm/v9/resource"
+	"github.com/juju/names/v4"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v6-unstable"
-	"gopkg.in/juju/charm.v6-unstable/hooks"
 )
 
 // ContextSetter is the type of a function that can
@@ -40,6 +41,7 @@ type sharedRegistry struct {
 	hooks     map[string][]hookFunc
 	commands  map[string]func([]string) (Command, error)
 	relations map[string]charm.Relation
+	resources map[string]resource.Meta
 	config    map[string]charm.Option
 	contexts  []ContextSetter
 	state     []localState
@@ -74,6 +76,7 @@ func NewRegistry() *Registry {
 			hooks:     make(map[string][]hookFunc),
 			commands:  make(map[string]func([]string) (Command, error)),
 			relations: make(map[string]charm.Relation),
+			resources: make(map[string]resource.Meta),
 			config:    make(map[string]charm.Option),
 			charmInfo: CharmInfo{
 				Name: "anon",
@@ -243,6 +246,28 @@ func (r *Registry) RegisterRelation(rel charm.Relation) {
 	r.relations[rel.Name] = rel
 }
 
+// RegisterResource registers a resource to be included in the charm's
+// metadata.yaml. If a resource is registered twice with the same
+// name, all of the details must also match.
+func (r *Registry) RegisterResource(res resource.Meta) {
+	if res.Name == "" {
+		panic(fmt.Errorf("no resource name given in %#v", res))
+	}
+
+	old, ok := r.resources[res.Name]
+	if ok {
+		if old != res {
+			panic(errgo.Newf("resource %q is already registered with different details (%#v)", res.Name, old))
+		}
+		return
+	}
+	if e := res.Validate(); e != nil {
+		panic(errgo.NoteMask(e, "validation failed"))
+	}
+
+	r.resources[res.Name] = res
+}
+
 // RegisterConfig registers a configuration option to be included in
 // the charm's config.yaml. If an option is registered twice with the
 // same name, all of the details must also match.
@@ -273,6 +298,12 @@ func (r *Registry) RegisteredHooks() []string {
 // registered with RegisterRelation, keyed by relation name.
 func (r *Registry) RegisteredRelations() map[string]charm.Relation {
 	return r.relations
+}
+
+// RegisteredResources returns resources
+// that have been registered with RegisterResource.
+func (r *Registry) RegisteredResources() map[string]resource.Meta {
+	return r.resources
 }
 
 // RegisteredConfig returns the configuration options

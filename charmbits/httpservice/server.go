@@ -19,8 +19,8 @@ import (
 	"gopkg.in/errgo.v1"
 	"gopkg.in/tomb.v2"
 
-	"github.com/juju/gocharm/charmbits/service"
-	"github.com/juju/gocharm/hook"
+	"github.com/mever/gocharm/charmbits/service"
+	"github.com/mever/gocharm/hook"
 )
 
 // server represents a running HTTP server.

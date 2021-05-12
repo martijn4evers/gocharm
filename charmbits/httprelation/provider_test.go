@@ -1,16 +1,16 @@
 package httprelation_test
 
 import (
+	"github.com/juju/charm/v9"
 	"sort"
 	"testing"
 
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
-	"gopkg.in/juju/charm.v6-unstable"
 
-	"github.com/juju/gocharm/charmbits/httprelation"
-	"github.com/juju/gocharm/hook"
-	"github.com/juju/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/charmbits/httprelation"
+	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/hook/hooktest"
 )
 
 func TestPackage(t *testing.T) {
