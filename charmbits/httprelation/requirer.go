@@ -4,8 +4,8 @@ import (
 	"net"
 	"strings"
 
-	"github.com/mever/gocharm/charmbits/simplerelation"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/charmbits/simplerelation"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // Requirer represents the requirer of an http relation.

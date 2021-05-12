@@ -30,9 +30,9 @@ import (
 	"github.com/juju/mgo/v2"
 	"gopkg.in/errgo.v1"
 
-	"github.com/mever/gocharm/charmbits/httpservice"
-	"github.com/mever/gocharm/charmbits/simplerelation"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/charmbits/httpservice"
+	"github.com/mever/gocharm/v2/charmbits/simplerelation"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // Requirer represents the requirer side of an mongodb relation.

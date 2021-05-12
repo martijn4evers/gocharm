@@ -8,8 +8,8 @@ import (
 	"github.com/juju/charm/v9"
 	"gopkg.in/errgo.v1"
 
-	"github.com/mever/gocharm/charmbits/simplerelation"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/charmbits/simplerelation"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // providerState holds the persistent charm state for the provider part of

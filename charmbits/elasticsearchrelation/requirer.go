@@ -4,8 +4,8 @@ package elasticsearchrelation
 import (
 	"net"
 
-	"github.com/mever/gocharm/charmbits/simplerelation"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/charmbits/simplerelation"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // Requirer represents the requirer side of an elasticsearch

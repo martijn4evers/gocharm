@@ -21,7 +21,7 @@
 //
 // This function should register any resources required by the
 // charm when it runs, including hooks, relations, configuration
-// options. See the hook package (github.com/mever/gocharm/hook)
+// options. See the hook package (github.com/mever/gocharm/v2/hook)
 // for an explanation of the hook registry.
 //
 // The hook is installed into the $JUJU_REPOSITORY/$series/$name

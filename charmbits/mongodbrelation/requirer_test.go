@@ -9,11 +9,11 @@ import (
 	jujutesting "github.com/juju/testing"
 	gc "gopkg.in/check.v1"
 
-	"github.com/mever/gocharm/charmbits/httpservice"
-	_ "github.com/mever/gocharm/charmbits/mongodbrelation"
-	"github.com/mever/gocharm/charmbits/service"
-	"github.com/mever/gocharm/hook"
-	"github.com/mever/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/v2/charmbits/httpservice"
+	_ "github.com/mever/gocharm/v2/charmbits/mongodbrelation"
+	"github.com/mever/gocharm/v2/charmbits/service"
+	"github.com/mever/gocharm/v2/hook"
+	"github.com/mever/gocharm/v2/hook/hooktest"
 )
 
 type suite struct {

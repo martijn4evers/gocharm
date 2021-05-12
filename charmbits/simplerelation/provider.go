@@ -4,7 +4,7 @@ import (
 	"github.com/juju/charm/v9"
 	"gopkg.in/errgo.v1"
 
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // Provider represents the provider side of a simple relation.

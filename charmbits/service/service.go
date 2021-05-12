@@ -17,7 +17,7 @@ import (
 	"github.com/juju/utils"
 	"gopkg.in/errgo.v1"
 
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // OSService defines the interface provided by an

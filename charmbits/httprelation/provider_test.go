@@ -8,9 +8,9 @@ import (
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
-	"github.com/mever/gocharm/charmbits/httprelation"
-	"github.com/mever/gocharm/hook"
-	"github.com/mever/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/v2/charmbits/httprelation"
+	"github.com/mever/gocharm/v2/hook"
+	"github.com/mever/gocharm/v2/hook/hooktest"
 )
 
 func TestPackage(t *testing.T) {

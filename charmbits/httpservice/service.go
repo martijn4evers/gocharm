@@ -15,9 +15,9 @@ import (
 
 	"gopkg.in/errgo.v1"
 
-	"github.com/mever/gocharm/charmbits/httprelation"
-	"github.com/mever/gocharm/charmbits/service"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/charmbits/httprelation"
+	"github.com/mever/gocharm/v2/charmbits/service"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // Service represents an HTTP service. It provides an http

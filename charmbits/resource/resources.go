@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/juju/errors"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/hook"
 	"github.com/juju/charm/v9/resource"
 )
 

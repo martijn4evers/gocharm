@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/hook"
 
 	"gopkg.in/errgo.v1"
 	"gopkg.in/yaml.v2"

@@ -15,11 +15,11 @@ import (
 	gc "gopkg.in/check.v1"
 	"gopkg.in/errgo.v1"
 
-	"github.com/mever/gocharm/charmbits/httpservice"
-	"github.com/mever/gocharm/charmbits/service"
-	"github.com/mever/gocharm/charmbits/simplerelation"
-	"github.com/mever/gocharm/hook"
-	"github.com/mever/gocharm/hook/hooktest"
+	"github.com/mever/gocharm/v2/charmbits/httpservice"
+	"github.com/mever/gocharm/v2/charmbits/service"
+	"github.com/mever/gocharm/v2/charmbits/simplerelation"
+	"github.com/mever/gocharm/v2/hook"
+	"github.com/mever/gocharm/v2/hook/hooktest"
 )
 
 type suite struct{}

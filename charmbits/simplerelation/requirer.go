@@ -9,7 +9,7 @@ import (
 	"github.com/juju/charm/v9"
 	"sort"
 
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 // Requirer represents the requirer side of a simple relation.

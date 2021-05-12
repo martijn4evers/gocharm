@@ -9,7 +9,7 @@ require (
 	github.com/juju/names/v4 v4.0.0-20200929085019-be23e191fee0
 	github.com/juju/testing v0.0.0-20210302031854-2c7ee8570c07
 	github.com/juju/utils v0.0.0-20200604140309-9d78121a29e0
-	github.com/mever/gocharm v0.0.0-20210512133818-6f6d6952fcb9
+	github.com/kardianos/service v1.2.0 // indirect
 	github.com/mever/service v1.2.1-0.20210512123113-570438e960f8
 	github.com/pkg/errors v0.9.1
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c

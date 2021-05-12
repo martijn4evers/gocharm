@@ -2,8 +2,8 @@ package deploy_test
 
 import (
 	"flag"
-	"github.com/mever/gocharm/deploy"
-	"github.com/mever/gocharm/hook"
+	"github.com/mever/gocharm/v2/deploy"
+	"github.com/mever/gocharm/v2/hook"
 )
 
 func ExampleRunMain() {
