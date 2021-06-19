@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"github.com/juju/charm/v9"
+	"github.com/juju/charm/v9/resource"
 	"go/build"
 	"io/ioutil"
 	"log"
@@ -40,7 +41,7 @@ func main() {
 	if len(os.Args) < 2 {
 		fatalf("hook name argument required")
 	}
-	// TODO would /etc/init be a better place for local state?		
+	// TODO would /etc/init be a better place for local state?
 	ctxt, state, err := hook.NewContextFromEnvironment(r, "/var/lib/juju-localstate", os.Args[1], os.Args[2:])
 	if err != nil {
 		fatalf("cannot create context: %v", err)
@@ -75,12 +76,6 @@ type buildCharmParams struct {
 	// tempDir holds a temporary directory to use for
 	// any temporary build artifacts.
 	tempDir string
-
-	// source specifies whether the source code should
-	// be vendored into the charm.
-	// This also implies that the hooks will have the
-	// capability to recompile.
-	source bool
 }
 
 type charmBuilder buildCharmParams
@@ -92,14 +87,7 @@ type charmBuilder buildCharmParams
 func buildCharm(p buildCharmParams) error {
 	b := (*charmBuilder)(&p)
 	code := generateCode(hookMainCode, b.pkg.ImportPath)
-	var exe string
-	if b.source {
-		// Build the runhook executable anyway, just to be sure
-		// that we can, but discard it.
-		exe = filepath.Join(b.tempDir, "runhook")
-	} else {
-		exe = filepath.Join(b.charmDir, "bin", "runhook")
-	}
+	exe := filepath.Join(b.charmDir, "bin", "runhook")
 	goFile := filepath.Join(b.charmDir, "src", "runhook", "runhook.go")
 	if err := compile(goFile, exe, code, true); err != nil {
 		return errgo.Notef(err, "cannot build hooks main package")
@@ -114,7 +102,7 @@ func buildCharm(p buildCharmParams) error {
 	if err := b.writeHooks(info.Hooks); err != nil {
 		return errgo.Notef(err, "cannot write hooks to charm")
 	}
-	if err := b.writeMeta(info.Relations); err != nil {
+	if err := b.writeMeta(info.Relations, info.Resources); err != nil {
 		return errgo.Notef(err, "cannot write metadata.yaml")
 	}
 	if err := b.writeConfig(info.Config); err != nil {
@@ -124,11 +112,6 @@ func buildCharm(p buildCharmParams) error {
 	_, err = charm.ReadCharmDir(b.charmDir)
 	if err != nil {
 		return errgo.Notef(err, "charm will not read correctly; we've broken it, sorry")
-	}
-	if b.source {
-		if err := ioutil.WriteFile(filepath.Join(b.charmDir, "compile"), []byte(compileScript), 0755); err != nil {
-			return errgo.Mask(err)
-		}
 	}
 	return nil
 }
@@ -195,12 +178,11 @@ type hookStubParams struct {
 
 func (b *charmBuilder) hookStub(hookName string) []byte {
 	return executeTemplate(hookStubTemplate, hookStubParams{
-		Source:    b.source,
 		HookName:  hookName,
 	})
 }
 
-func (b *charmBuilder) writeMeta(relations map[string]charm.Relation) error {
+func (b *charmBuilder) writeMeta(relations map[string]charm.Relation, resources map[string]resource.Meta) error {
 	metaFile, err := os.Open(filepath.Join(b.pkg.Dir, "metadata.yaml"))
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -223,6 +205,7 @@ func (b *charmBuilder) writeMeta(relations map[string]charm.Relation) error {
 	meta.Provides = make(map[string]charm.Relation)
 	meta.Requires = make(map[string]charm.Relation)
 	meta.Peers = make(map[string]charm.Relation)
+	meta.Resources = resources
 
 	for name, rel := range relations {
 		switch rel.Role {
@@ -342,15 +325,3 @@ func executeTemplate(t *template.Template, param interface{}) []byte {
 	}
 	return w.Bytes()
 }
-
-var compileScript = `#!/bin/sh
-set -e
-if test -z "$CHARM_DIR"; then
-	echo CHARM_DIR not set >&2
-	exit 2
-fi
-export PATH="$CHARM_DIR/bin:$PATH"
-cd "$CHARM_DIR/src/runhook"
-export GOPATH="$CHARM_DIR"
-go install
-`

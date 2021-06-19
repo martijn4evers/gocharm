@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/juju/charm/v9"
+	"github.com/juju/charm/v9/resource"
 	"log"
 	"os"
 	"os/exec"
@@ -50,6 +51,7 @@ type charmInfo struct {
 	Hooks     []string
 	Relations map[string]charm.Relation
 	Config    map[string]charm.Option
+	Resources map[string]resource.Meta
 }
 
 var inspectCode = template.Must(template.New("").Parse(`
@@ -60,6 +62,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/juju/charm/v9"
+	"github.com/juju/charm/v9/resource"
 	"os"
 
 	inspect {{.CharmPackage | printf "%q"}}
@@ -72,6 +75,7 @@ type charmInfo struct {
 	Hooks     []string
 	Relations map[string]charm.Relation
 	Config    map[string]charm.Option
+	Resources map[string]resource.Meta
 }
 
 func main() {
@@ -82,6 +86,7 @@ func main() {
 		Hooks:     r.RegisteredHooks(),
 		Relations: r.RegisteredRelations(),
 		Config:    r.RegisteredConfig(),
+		Resources: r.RegisteredResources(),
 	})
 	if err != nil {
 		panic(err)
