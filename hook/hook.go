@@ -1,4 +1,4 @@
-// The hook package provides a Go interface to the
+// Package hook provides a Go interface to the
 // Juju charm hook commands. It is designed to be used
 // alongside the gocharm command.
 // See http://godoc.org/github.com/mever/gocharm/v2/cmd/gocharm .

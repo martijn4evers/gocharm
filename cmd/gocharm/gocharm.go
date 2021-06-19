@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"github.com/juju/charm/v9"
-	"github.com/juju/charm/v9/resource"
 	"go/build"
 	"io/ioutil"
 	"log"
@@ -80,29 +79,99 @@ type buildCharmParams struct {
 
 type charmBuilder buildCharmParams
 
+func getGoModuleNameFromCurrentDir() string {
+	cmd := runCmd("", nil, "go", "list", "-m")
+	cmd.Stdout = nil
+	data, er := cmd.Output()
+	if er != nil {
+		panic("failed to get Go module name")
+	}
+	return strings.SplitN(string(data), "\n", 2)[0]
+}
+
+func prepareTempSource(goFile, exeFile, modulePath, importPath string) ([]string, error) {
+	code := generateCode(hookMainCode, importPath)
+	if err := os.MkdirAll(filepath.Dir(goFile), 0777); err != nil {
+		return nil, errgo.Mask(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(exeFile), 0777); err != nil {
+		return nil, errgo.Mask(err)
+	}
+	if err := ioutil.WriteFile(goFile, code, 0666); err != nil {
+		return nil, errgo.Mask(err)
+	}
+	env := os.Environ()
+	env = setenv(env, "CGOENABLED=false")
+	env = setenv(env, "GOARCH=amd64")
+	env = setenv(env, "GOOS=linux")
+
+	goDir := filepath.Dir(goFile)
+	if *verbose {
+		log.Printf("building in: %s", goDir)
+	}
+	if err := runCmd(goDir, env, "go", "mod", "init", "github.com/mever/gocharm/tmp-build").Run(); err != nil {
+		return nil, errgo.Notef(err, "failed to initialize Go modules")
+	}
+
+	localPath, er := os.Getwd()
+	if er != nil {
+		return nil, errgo.Notef(er, "can not get current directory")
+	}
+
+	localModulePath := getLocalPathToGoModule(modulePath, importPath, localPath)
+	if err := runCmd(goDir, env, "go", "mod", "edit", "-replace", modulePath+"="+localModulePath).Run(); err != nil {
+		return nil, errgo.Notef(err, "failed to replace package path with a local path")
+	}
+
+	if err := runCmd(goDir, env, "go", "mod", "tidy").Run(); err != nil {
+		return nil, errgo.Notef(err, "failed to tidy Go modules")
+	}
+	return env, nil
+}
+
+func getLocalPathToGoModule(modulePath, importPath, localPath string) string {
+	if modulePath == importPath {
+		return localPath
+	} else {
+		return localPath[0:len(localPath)-len(importPath[len(modulePath):])]
+	}
+}
+
 // buildCharm builds the runhook executable,
 // and all the other charm pieces (hooks, metadata.yaml,
 // config.yaml). It puts the runhook source file into goFile
 // and the runhook executable into exe.
 func buildCharm(p buildCharmParams) error {
 	b := (*charmBuilder)(&p)
-	code := generateCode(hookMainCode, b.pkg.ImportPath)
-	exe := filepath.Join(b.charmDir, "bin", "runhook")
+
+	modulePath := getGoModuleNameFromCurrentDir()
+	importPath := b.pkg.ImportPath
+	if importPath == "." {
+		importPath = modulePath
+	}
+
+	exeFile := filepath.Join(b.charmDir, "bin", "runhook")
 	goFile := filepath.Join(b.charmDir, "src", "runhook", "runhook.go")
-	if err := compile(goFile, exe, code, true); err != nil {
+	env, err := prepareTempSource(goFile, exeFile, modulePath, importPath)
+	if err != nil {
 		return errgo.Notef(err, "cannot build hooks main package")
 	}
-	if _, err := os.Stat(exe); err != nil {
+
+	if err := compile(goFile, exeFile, env); err != nil {
+		return errgo.Notef(err, "cannot build hooks main package")
+	}
+	if _, err := os.Stat(exeFile); err != nil {
 		return errgo.New("runhook command not built")
 	}
-	info, err := registeredCharmInfo(p.pkg.ImportPath, p.tempDir)
+
+	info, err := registeredCharmInfo(importPath, p.tempDir)
 	if err != nil {
 		return errgo.Mask(err)
 	}
 	if err := b.writeHooks(info.Hooks); err != nil {
 		return errgo.Notef(err, "cannot write hooks to charm")
 	}
-	if err := b.writeMeta(info.Relations, info.Resources); err != nil {
+	if err := b.writeMeta(info.Meta); err != nil {
 		return errgo.Notef(err, "cannot write metadata.yaml")
 	}
 	if err := b.writeConfig(info.Config); err != nil {
@@ -148,31 +217,12 @@ func (b *charmBuilder) writeHooks(hooks []string) error {
 }
 
 // hookStubTemplate holds the template for the generated hook code.
-// The apt-get flags are stolen from github.com/juju/utils/apt
 var hookStubTemplate = template.Must(template.New("").Parse(`#!/bin/sh
 set -ex
-{{if .Source}}
-{{if eq .HookName "install"}}
-apt-get '--option=Dpkg::Options::=--force-confold'  '--option=Dpkg::options::=--force-unsafe-io' --assume-yes --quiet install golang git mercurial
-
-if test -e "$CHARM_DIR/bin/runhook"; then
-	# the binary has been pre-compiled; no need to compile again.
-	exit 0
-fi
-export GOPATH="$CHARM_DIR"
-
-"$CHARM_DIR/compile"
-{{else}}
-if test -e "$CHARM_DIR/compile-always"; then
-	"$CHARM_DIR/compile"
-fi
-{{end}}
-{{end}}
 $CHARM_DIR/bin/runhook {{.HookName}}
 `))
 
 type hookStubParams struct {
-	Source    bool
 	HookName  string
 }
 
@@ -182,43 +232,10 @@ func (b *charmBuilder) hookStub(hookName string) []byte {
 	})
 }
 
-func (b *charmBuilder) writeMeta(relations map[string]charm.Relation, resources map[string]resource.Meta) error {
-	metaFile, err := os.Open(filepath.Join(b.pkg.Dir, "metadata.yaml"))
-	if err != nil {
-		if os.IsNotExist(err) {
-			metaFile = nil
-		} else {
-			return errgo.Mask(err)
-		}
-	}
-	meta := &charm.Meta{}
-	if metaFile != nil {
-		defer metaFile.Close()
-		meta, err = charm.ReadMeta(metaFile)
-		if err != nil {
-			return errgo.Notef(err, "cannot read metadata.yaml from %q", b.pkg.Dir)
-		}
-	}
+func (b *charmBuilder) writeMeta(meta charm.Meta) error {
 	// The metadata name must match the directory name otherwise
 	// juju deploy will ignore the charm.
 	meta.Name = filepath.Base(b.pkg.Dir)
-	meta.Provides = make(map[string]charm.Relation)
-	meta.Requires = make(map[string]charm.Relation)
-	meta.Peers = make(map[string]charm.Relation)
-	meta.Resources = resources
-
-	for name, rel := range relations {
-		switch rel.Role {
-		case charm.RoleProvider:
-			meta.Provides[name] = rel
-		case charm.RoleRequirer:
-			meta.Requires[name] = rel
-		case charm.RolePeer:
-			meta.Peers[name] = rel
-		default:
-			return errgo.Newf("unknown role %q in relation", rel.Role)
-		}
-	}
 	if err := writeYAML(filepath.Join(b.charmDir, "metadata.yaml"), meta); err != nil {
 		return errgo.Notef(err, "cannot write metadata.yaml")
 	}
@@ -284,22 +301,7 @@ func generateCode(tmpl *template.Template, charmPackage string) []byte {
 	})
 }
 
-func compile(goFile, exeFile string, mainCode []byte, crossCompile bool) error {
-	env := os.Environ()
-	if crossCompile {
-		env = setenv(env, "CGOENABLED=false")
-		env = setenv(env, "GOARCH=amd64")
-		env = setenv(env, "GOOS=linux")
-	}
-	if err := os.MkdirAll(filepath.Dir(goFile), 0777); err != nil {
-		return errgo.Mask(err)
-	}
-	if err := os.MkdirAll(filepath.Dir(exeFile), 0777); err != nil {
-		return errgo.Mask(err)
-	}
-	if err := ioutil.WriteFile(goFile, mainCode, 0666); err != nil {
-		return errgo.Mask(err)
-	}
+func compile(goFile, exeFile string, env []string) error {
 	if err := runCmd("", env, "go", "build", "-o", exeFile, goFile).Run(); err != nil {
 		return errgo.Notef(err, "failed to build")
 	}
@@ -311,8 +313,10 @@ func runCmd(dir string, env []string, cmd string, args ...string) *exec.Cmd {
 		log.Printf("run %s %s", cmd, strings.Join(args, " "))
 	}
 	c := exec.Command(cmd, args...)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
+	if *verbose {
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+	}
 	c.Env = env
 	c.Dir = dir
 	return c
