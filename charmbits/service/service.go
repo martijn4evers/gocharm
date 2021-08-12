@@ -127,7 +127,11 @@ func (svc *Service) Stop() error {
 
 // Started reports whether the service has been started.
 func (svc *Service) Started() bool {
-	return svc.osService(nil).Running()
+	service := svc.osService(nil)
+	if service.(*srv).p.IsNotInstalled() {
+		return false
+	}
+	return service.Running()
 }
 
 // StopAndRemove stops and removes the service completely.
