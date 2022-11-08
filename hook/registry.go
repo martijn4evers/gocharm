@@ -318,6 +318,7 @@ var hookNames = map[hooks.Kind]bool{
 	hooks.Install:            true,
 	hooks.Start:              true,
 	hooks.ConfigChanged:      true,
+	hooks.UpdateStatus:       true,
 	hooks.UpgradeCharm:       true,
 	hooks.Stop:               true,
 	hooks.Action:             true,
